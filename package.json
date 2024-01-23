@@ -1,0 +1,18 @@
+{ "type": "module",
+  "name": "billboardsell",
+  "version": "1.0.0",
+  "description": "домашка по трвп, зима 2024",
+  "main": "index.js",
+  "scripts": {
+    "devback": "node ./backend",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.2",
+    "express": "^4.18.2",
+    "pg": "^8.11.3",
+    "vite": "^5.0.12"
+  }
+}
