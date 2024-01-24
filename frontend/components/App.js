@@ -139,16 +139,6 @@ export default class App {
       console.error(err);
 
     }
-    // const destTasksIDs = Array.from(
-    //   destTasklistElement.querySelector('.tasklist__tasks-list').children,
-    //   elem => elem.getAttribute('id')
-    // );
-
-    // destTasksIDs.forEach((taskID, position) => {
-    //   destBillboard.getTaskById({ taskID }).taskPosition = position;
-    // });
-
-    // console.log(this.#billboards);
   };
 
  
@@ -239,13 +229,6 @@ export default class App {
 
 
   deleteBillboard = async ({ BillboardID }) => {
-    // let fTask = null;
-    // let fTasklist = null;
-    // for (let billboard of this.#billboards) {
-    //   fTasklist = billboard;
-    //   fTask = billboard.getTaskById({ taskID });
-    //   if (fTask) break;
-    // }
     try{
       const deleteTaskResult = await AppModel.deleteBillboard({ BillboardID });
 

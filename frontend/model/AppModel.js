@@ -95,6 +95,7 @@ export default class AppModel {
         }
     }
 
+    
     static async updateTask({taskID, name_advert, date_start, date_end} = {
         taskID: null,
         name_advert: '',
@@ -131,6 +132,7 @@ export default class AppModel {
         }
     }
 
+
     static async updateTasks({reorderedTasks = []} = {
         reorderedTasks: []
     }) {
@@ -164,6 +166,7 @@ export default class AppModel {
         }
     }
 
+
     static async deleteTask({taskID } = {
         taskID: null
     }) {
@@ -193,6 +196,7 @@ export default class AppModel {
         }
     }
 
+
     static async deleteBillboard({BillboardID } = {
         taskID: null
     }) {
@@ -221,6 +225,7 @@ export default class AppModel {
             });
         }
     }
+
 
     static async updateBillboard({BillboardID, addres } = {
         taskID: null
@@ -254,6 +259,7 @@ export default class AppModel {
             });
         }
     }
+
 
     static async moveTask({taskID, srcbillboardID, destbillboardID} = {
         taskID: null,
