@@ -81,7 +81,7 @@ body.dark-theme {
   height: clamp(2rem, 6vw, 5rem);
   border-radius: 50%;
   border: 2px solid var(--white-color);
-  background: url(images/keanu.jpg) center / cover;
+  background: url(images/operator.jpg) center / cover;
 }
 
 .user-info__username {
