@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+  <script type="module" src="index.js"></script>
+  <title>Заявки на биллборды</title>
+</head>
+<body>
+  <header class="app-header" id="app-header">
+    <h1 class="app-header__app-name">Заявки на биллборды</h1>
+    <div class="app-header__user-and-controls">
+      <div class="user-info">
+        <div class="user-info__avatar"></div>
+        <span class="user-info__username">
+          Оператор
+        </span>
+      </div>
+      <label class="toggle-switch" id="theme-switch">
+        <input type="checkbox" class="toggle-switch__checkbox" />
+        <div class="toggle-switch__slider"></div>
+      </label>
+    </div>
+  </header>
+  <main class="app-main" id="app-main">
+    <ul class="tasklists-list">
+      <li class="tasklists-list__item tasklist-adder">
+        <button type="button" class="tasklist-adder__btn">
+          &#10010; Добавить Биллборд
+        </button>
+        <input
+          type="text"
+          placeholder="Новый список"
+          class="tasklist-adder__input"
+        />
+      </li>
+    </ul>
+  </main>
+  <dialog class="app-modal" id="modal-add-task">
+    <form class="app-modal__form">
+      <label for="modal-add-task-input" class="app-modal__question">
+        Введите имя арендатора:
+      </label>
+      <input type="text" name="" id="modal-add-task-input" class="app-modal__input">
+        Введите дату начала аренды:
+
+      <input type="date" id="modal-add-task-date-start">
+
+        Введите дату конца аренды:
+
+      <input type="date" id="modal-add-task-date-end">
+
+      <div class="app-modal__controls">
+        <button type="button" class="app-modal__btn modal-ok-btn">OK</button>
+        <button type="button" class="app-modal__btn modal-cancel-btn">Отмена</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="app-modal" id="modal-edit-task">
+    <form class="app-modal__form">
+      <label for="modal-add-task-input" class="app-modal__question">
+        Введите новое имя арендатора:
+      </label>
+      <input type="text" name="" id="modal-edit-task-input" class="app-modal__input">
+        Введите новую дату начала аренды:
+
+      <input type="date" id="modal-add-task-date-start-edit">
+
+        Введите новую дату конца аренды:
+
+      <input type="date" id="modal-add-task-date-end-edit">
+      <div class="app-modal__controls">
+        <button type="button" class="app-modal__btn modal-ok-btn">OK</button>
+        <button type="button" class="app-modal__btn modal-cancel-btn">Отмена</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="app-modal" id="modal-edit-billboard">
+    <form class="app-modal__form">
+      <label for="modal-edit-task-input" class="app-modal__question-billboard">
+        Введите новый адрес:
+      </label>
+      <input type="text" name="" id="modal-edit-billboard-input" class="app-modal__input">
+      <div class="app-modal__controls">
+        <button type="button" class="app-modal__btn modal-ok-btn">OK</button>
+        <button type="button" class="app-modal__btn modal-cancel-btn">Отмена</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="app-modal" id="modal-delete-task">
+    <form class="app-modal__form">
+      <label class="app-modal__question">
+      </label>
+      <!-- <input type="text" name="" id="modal-delete-task-input" class="app-modal__input"> -->
+      <div class="app-modal__controls">
+        <button type="button" class="app-modal__btn modal-ok-btn">OK</button>
+        <button type="button" class="app-modal__btn modal-cancel-btn">Отмена</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="app-modal" id="modal-delete-billboard">
+    <form class="app-modal__form">
+      <label class="app-modal__question_billboard">
+      </label>
+      <!-- <input type="text" name="" id="modal-delete-task-input" class="app-modal__input"> -->
+      <div class="app-modal__controls">
+        <button type="button" class="app-modal__btn modal-ok-btn">OK</button>
+        <button type="button" class="app-modal__btn modal-cancel-btn">Отмена</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="app-notifications" id="app-notifications">
+  </dialog>
+</body>
+</html>

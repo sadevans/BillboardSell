@@ -97,16 +97,16 @@ export default class DB {
     }
 
     async addBillboard({
-        billboardID,
+        BillboardID,
         addres
         // datetime = -1
     } = {
-        billboardID: null,
+        BillboardID: null,
         addres: ''
         // datetime: -1
     }){
-        if(!billboardID ||!addres){
-            const errMsg = `Add order error: wrong params (id: ${billboardID},name: ${addres})`;
+        if(!BillboardID ||!addres){
+            const errMsg = `Add order error: wrong params (id: ${BillboardID},name: ${addres})`;
             console.error(errMsg);
             return Promise.reject({
                 type: 'client',
@@ -117,7 +117,7 @@ export default class DB {
         try {
             await this.#dbClient.query(
                 'INSERT INTO billboards (billboard_id, addres) values ($1, $2);',
-                [billboardID, addres]
+                [BillboardID, addres]
             );
 
         } catch (error) {
@@ -134,17 +134,18 @@ export default class DB {
         name_advert,
         date_start,
         date_end,
-        billboardID
+        BillboardID
     } = {
         taskID: null,
         name_advert: null,
         date_start: null,
         date_end: null,
-        billboardID: null
+        BillboardID: null
     }){
-        if(!taskID || !name_advert || !date_start || !date_end || !billboardID){
+        if(!taskID || !name_advert || !date_start || !date_end || !BillboardID){
+
             const errMsg = `Add position error: wrong params (id: ${taskID})`;
-            console.error(errMsg);
+            console.error(errMsg, taskID, name_advert, date_start, date_end, BillboardID);
             return Promise.reject({
                 type: 'client',
                 error: new Error(errMsg)
@@ -154,11 +155,11 @@ export default class DB {
         try {
             await this.#dbClient.query(
                 'INSERT INTO tasks (task_id, name_advert ,date_start ,date_end ,billboard_id) VALUES ($1, $2, to_timestamp($3 / 1000.0), to_timestamp($4 / 1000.0), $5);',
-                [taskID, name_advert ,date_start ,date_end ,billboardID]
+                [taskID, name_advert ,date_start ,date_end ,BillboardID]
             );
             await this.#dbClient.query(
                 'UPDATE billboards SET tasks = array_append(tasks, $1) where billboard_id = $2;',
-                [taskID, billboardID]
+                [taskID, BillboardID]
             );
 
         } catch (error) {
@@ -171,12 +172,12 @@ export default class DB {
     }
 
     async deleteBillboard({
-        billboardID
+        BillboardID
     } = {
-        billboardID: null
+        BillboardID: null
     }){
-        if(!billboardID){
-            const errMsg = `Delete order error: wrong params (id: ${billboardID})`;
+        if(!BillboardID){
+            const errMsg = `Delete order error: wrong params (id: ${BillboardID})`;
             console.error(errMsg);
             return Promise.reject({
                 type: 'client',
@@ -187,11 +188,11 @@ export default class DB {
         try {
             await this.#dbClient.query(
                 'DELETE FROM tasks WHERE billboard_id = $1;',
-                [billboardID]
+                [BillboardID]
             );
             await this.#dbClient.query(
                 'DELETE FROM billboards WHERE billboard_id = $1;',
-                [billboardID]
+                [BillboardID]
             );
 
         } catch (error) {
@@ -222,7 +223,7 @@ export default class DB {
                 'SELECT billboard_id FROM tasks WHERE task_id = $1;',
                 [taskID]
             );
-            const {billboard_id:billboardID} = queryResult.rows[0];
+            const {billboard_id:BillboardID} = queryResult.rows[0];
             
             await this.#dbClient.query(
                 'DELETE FROM tasks WHERE task_id = $1;',
@@ -230,7 +231,7 @@ export default class DB {
             );
             await this.#dbClient.query(
                 'UPDATE billboards SET tasks = array_remove(tasks, $1) WHERE billboard_id = $2;',
-                [taskID, billboardID]
+                [taskID, BillboardID]
             );
 
         } catch (error) {
@@ -243,15 +244,15 @@ export default class DB {
     }
 
     async updateBillboard({
-        billboardID,
+        BillboardID,
         addres
         
     } = {
-        billboardID: null,
+        BillboardID: null,
         addres: ''
     }){
-        if(!addres || !billboardID){
-            const errMsg = `Update order error: wrong params (id: ${billboardID}, addres: ${addres})`;
+        if(!addres || !BillboardID){
+            const errMsg = `Update order error: wrong params (id: ${BillboardID}, addres: ${addres})`;
             console.error(errMsg);
             return Promise.reject({
                 type: 'client',
@@ -264,7 +265,7 @@ export default class DB {
 
         if(addres){
             query = 'UPDATE billboards SET addres = $1 WHERE billboard_id = $2;';
-            queryParams.push(addres, billboardID);
+            queryParams.push(addres, BillboardID);
         } 
 
         try {

@@ -44,7 +44,7 @@ app.get('/billboards', async (req, res) => {
         })); 
 
         const billboards = dbBillboards.map(billboard => ({
-            billboardID: billboard.id,
+            BillboardID: billboard.billboard_id,
             addres: billboard.addres,
             tasks: tasks.filter(task => billboard.tasks.indexOf(task.taskID) !== -1)
         }));
@@ -70,8 +70,8 @@ app.use('/billboards', express.json())
 // add order
 app.post('/billboards', async (req, res) => {
     try{
-        const {billboardID, addres} = req.body;
-        await db.addBillboard({billboardID, addres});
+        const {BillboardID, addres} = req.body;
+        await db.addBillboard({BillboardID, addres});
         res.statusCode = 200;
         res.statusMessage = 'OK';
         res.send();
@@ -100,10 +100,10 @@ app.use('/tasks', express.json())
 // add position
 app.post('/tasks', async (req, res) => {
     try{
-        const { taskID, name_advert ,date_start ,date_end ,billboardID } = req.body;
-        const start = new Date().getTime();
-        const end = new Date().getTime();
-        await db.addTask({ taskID, name_advert, date_start: start, date_end: end, billboardID });
+        const { taskID, name_advert, date_start, date_end, BillboardID } = req.body;
+        // const start = new Date().getTime();
+        // const end = new Date().getTime();
+        await db.addTask({ taskID, name_advert, date_start, date_end, BillboardID });
         res.statusCode = 200;
         res.statusMessage = 'OK';
         res.send();
@@ -134,7 +134,7 @@ app.patch('/billboards/:billboardID', async (req, res) => {
     try{
         const { billboardID } = req.params;
         const { addres } = req.body;
-        await db.updateBillboard({ billboardID, addres});
+        await db.updateBillboard({ BillboardID:billboardID, addres});
         res.statusCode = 200;
         res.statusMessage = 'OK';
         res.send();
@@ -228,7 +228,7 @@ app.patch('/tasks', async (req, res) => {
 app.delete('/billboards/:billboardID', async (req, res) => {
     try{
         const { billboardID } = req.params;
-        await db.deleteBillboard({ billboardID });
+        await db.deleteBillboard({ BillboardID:billboardID });
 
         res.statusCode = 200;
         res.statusMessage = 'OK';

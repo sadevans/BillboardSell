@@ -4,8 +4,9 @@
   "description": "домашка по трвп, зима 2024",
   "main": "index.js",
   "scripts": {
-    "devback": "node ./backend",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-front": "vite build ./frontend",
+    "dev-back": "npm run build-front && node ./backend",
+    "back": "node ./backend"
   },
   "author": "",
   "license": "ISC",
