@@ -166,11 +166,9 @@ app.patch('/tasks/:taskID', async (req, res) => {
     try{
         const { taskID } = req.params;
         const { name_advert, date_start, date_end } = req.body;
-        const start = new Date().getTime();
-        const end = new Date().getTime();
 
         
-        await db.updateTask({ taskID, name_advert, date_start:start, date_end:end});
+        await db.updateTask({ taskID, name_advert, date_start, date_end});
         res.statusCode = 200;
         res.statusMessage = 'OK';
         res.send();

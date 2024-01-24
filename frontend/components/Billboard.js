@@ -20,7 +20,8 @@ export default class Billboard {
   }
 
   get BillboardID() { return this.#BillboardID; }
-
+  get tasks() { return this.#tasks; }
+  
   pushTask = ({ task }) => this.#tasks.push(task);
 
   getTaskById = ({ taskID }) => this.#tasks.find(task => task.taskID === taskID);
@@ -76,23 +77,39 @@ export default class Billboard {
     console.log("am i supposed to be here?");
     try {
       console.log("x3", this.#BillboardID)
-      const taskID = crypto.randomUUID();
-      const addTaskResult = await AppModel.addTask({
-        taskID: taskID,
-        name_advert, 
-        date_start, 
-        date_end,
-        BillboardID: this.#BillboardID
-      });
-      console.log("am i supposed to be here?");
-      this.addNewTaskLocal({
-        taskID,
-        taskText: name_advert, 
-        taskDateStart: new Date(date_start).toISOString().slice(0,10), 
-        taskDateEnd: new Date(date_end).toISOString().slice(0,10),
-      });
+      let check = 1;
+      for (let i = 0; i < this.#tasks.length; i++){
+        const dateStart = new Date(this.#tasks[i].taskDateStart).getTime() + 10800000;
+        const dateEnd = new Date(this.#tasks[i].taskDateEnd).getTime() + 10800000;
+        
+        if (date_start <= dateEnd && date_start >= dateStart || date_end <= dateEnd && date_end >= dateStart){
+          check = 0;
+        }
+        console.log("dates:", date_start, date_end, dateStart, dateEnd);
+      }
+      if (check){      
+        const taskID = crypto.randomUUID();
+        const addTaskResult = await AppModel.addTask({
+          taskID: taskID,
+          name_advert, 
+          date_start, 
+          date_end,
+          BillboardID: this.#BillboardID
+        });
+        console.log("am i supposed to be here?", this.#BillboardID);
+        this.addNewTaskLocal({
+          taskID,
+          taskText: name_advert, 
+          taskDateStart: new Date(date_start).toISOString().slice(0,10), 
+          taskDateEnd: new Date(date_end).toISOString().slice(0,10),
+          BillboardID: this.#BillboardID,
+        });
+  
+        this.addNotification({ text: addTaskResult.message, type: 'success'});
+      }else{
+        this.addNotification({ text: 'DATE COLLISION', type: 'error'});
+      }
 
-      this.addNotification({ text: addTaskResult.message, type: 'success'});
     } catch (err) {
       this.addNotification({ text: err.message, type: 'error'});
       console.error(err);
@@ -102,13 +119,14 @@ export default class Billboard {
   };
 
 
-  addNewTaskLocal = ({taskID = null, taskText, taskDateStart, taskDateEnd}) => {
-    console.log("here");
+  addNewTaskLocal = ({taskID = null, taskText, taskDateStart, taskDateEnd, BillboardID}) => {
+    console.log("here", BillboardID);
     const newTask = new Task({
       taskID,
       taskText,
       taskDateStart, 
-      taskDateEnd
+      taskDateEnd,
+      BillboardID
     });
     this.#tasks.push(newTask);
 
@@ -165,7 +183,7 @@ export default class Billboard {
     const button = document.createElement('button');
     button.setAttribute('type', 'button');
     button.classList.add('tasklist__add-task-btn');
-    button.innerHTML = '&#10010; Добавить карточку';
+    button.innerHTML = '&#10010; Добавить заявку';
     button.addEventListener('click', () => {
       console.log("x2", this.#BillboardID)
       localStorage.setItem('addTaskTasklistID', this.#BillboardID);

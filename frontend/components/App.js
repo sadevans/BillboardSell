@@ -3,6 +3,10 @@ import AppModel from '../model/AppModel.js';
 
 export default class App {
   #billboards = [];
+  #minday = 3;
+  #maxday = 30;
+  #minms = this.#minday * 24 * 60 * 60 * 1000;
+  #maxms = this.#maxday * 24 * 60 * 60 * 1000;
 
   onEscapeKeydown = (event) => {
     if (event.key === 'Escape') {
@@ -73,28 +77,59 @@ export default class App {
 
     if (!destTasklistElement.querySelector(`[id="${movedTaskID}"]`)) return;
 
-    const srcTasklist = this.#billboards.find(billboard => billboard.BillboardID === srcbillboardID);
-    const destTasklist = this.#billboards.find(billboard => billboard.BillboardID === destbillboardID);
-    console.log(srcTasklist, srcbillboardID);
-    console.log(destTasklist, destbillboardID);
+    const srcBillboard = this.#billboards.find(billboard => billboard.BillboardID === srcbillboardID);
+    const destBillboard = this.#billboards.find(billboard => billboard.BillboardID === destbillboardID);
+
+    const movedTaskDateStart = srcBillboard.tasks.find(task => task.taskID === movedTaskID).taskDateStart;
+    const movedTaskDateEnd = srcBillboard.tasks.find(task => task.taskID === movedTaskID).taskDateEnd;
+    const date_start = new Date(movedTaskDateStart).getTime() + 10800000;
+    const date_end = new Date(movedTaskDateEnd).getTime() + 10800000;
+    console.log("what", srcBillboard, srcbillboardID);
+    console.log("what x2", destBillboard, destbillboardID);
+    console.log("what x3", movedTaskDateStart, movedTaskDateEnd);
     try {
       
       if (srcbillboardID !== destbillboardID) {
-        
-        await AppModel.moveTask({
-          taskID: movedTaskID,
-          srcbillboardID,
-          destbillboardID
-        });
-        // console.log('hqwjqjwq');
-        const movedTask = srcTasklist.deleteTask({ taskID: movedTaskID });
-        destTasklist.pushTask({ task: movedTask });
+        var check = 1;
+        for (var i = 0; i < destBillboard.tasks.length; i++){
+          const dateStart = new Date(destBillboard.tasks[i].taskDateStart).getTime() + 10800000;
+          const dateEnd = new Date(destBillboard.tasks[i].taskDateEnd).getTime() + 10800000;
+          
+          if (date_start <= dateEnd && date_start >= dateStart || date_end <= dateEnd && date_end >= dateStart){
+            check = 0;
+          }
+          console.log("dates:", date_start, date_end, dateStart, dateEnd);
+        }
+        if (check){
+          await AppModel.moveTask({
+            taskID: movedTaskID,
+            srcbillboardID,
+            destbillboardID
+          });
+          // console.log('hqwjqjwq');
+          const movedTask = srcBillboard.deleteTask({ taskID: movedTaskID });
+          const loc_id = movedTask.BillboardID;
+          console.log("move:", loc_id);
+          movedTask.BillboardID = destbillboardID;
+          const loc_id1 = movedTask.BillboardID;
+          console.log("move:", loc_id1, srcbillboardID, destbillboardID);
+          destBillboard.pushTask({ task: movedTask });
+        }else{
+          this.addNotification({ text: 'DATE COLLISION', type: 'error'});
+          const false_move_dest = document.getElementById(movedTaskID);
+          const false_billboard = document.getElementById(srcbillboardID);
+          const new_back = false_move_dest;
+          const querys = false_billboard.querySelectorAll('.task__contol-btn');
+          querys[querys.length - 1].after(new_back)
+          //false_move_dest.remove();
+        }
+
   
-        // await srcTasklist.reorderTasks();
+        // await srcBillboard.reorderTasks();
         // console.log('hqwjqjwq');
       }
   
-      // await destTasklist.reorderTasks();
+      // await destBillboard.reorderTasks();
       // console.log('hqwjqjwq');
 
       
@@ -110,7 +145,7 @@ export default class App {
     // );
 
     // destTasksIDs.forEach((taskID, position) => {
-    //   destTasklist.getTaskById({ taskID }).taskPosition = position;
+    //   destBillboard.getTaskById({ taskID }).taskPosition = position;
     // });
 
     // console.log(this.#billboards);
@@ -118,17 +153,43 @@ export default class App {
 
  
 
-  editTask = async ({ taskID, name_advert, date_start, date_end }) => {
+  editTask = async ({ taskID, name_advert, date_start, date_end, BillboardID }) => {
 
     try{
       console.log("please not here", taskID, name_advert, date_start, date_end);
-      const updateTaskResult = await AppModel.updateTask({ taskID, name_advert, date_start, date_end});
-      console.log("here?");
-      document.querySelector(`[id="${taskID}"] h1.task__text1`).innerHTML = `ФИО: ${name_advert}`;
-      document.querySelector(`[id="${taskID}"] h1.task__text2`).innerHTML = `Начало аренды: ${new Date(date_start).toISOString().slice(0,10)}`;
-      document.querySelector(`[id="${taskID}"] h1.task__text3`).innerHTML = `Конец аренды: ${new Date(date_end).toISOString().slice(0,10)}`;
-      console.log(updateTaskResult);
-      this.addNotification({ text: updateTaskResult.message, type: 'success'});
+      const localBillboard = this.#billboards.find(item => item.BillboardID === BillboardID);
+      console.log("local", localBillboard);
+      console.log("local", this.#billboards, BillboardID);
+      var check = 1;
+      for (var i = 0; i < localBillboard.tasks.length; i++){
+        const dateStart = new Date(localBillboard.tasks[i].taskDateStart).getTime() + 10800000;
+        const dateEnd = new Date(localBillboard.tasks[i].taskDateEnd).getTime() + 10800000;
+        
+        if (date_start <= dateEnd && date_start >= dateStart || date_end <= dateEnd && date_end >= dateStart){
+          check = 0;
+        }
+        console.log("dates:", date_start, date_end, dateStart, dateEnd);
+      }
+      if (date_start<date_end){
+        if (date_end - date_start >= this.#minms && date_end - date_start <= this.#maxms){
+          if (check){
+            const updateTaskResult = await AppModel.updateTask({ taskID, name_advert, date_start, date_end});
+            console.log("here?");
+            document.querySelector(`[id="${taskID}"] h1.task__text1`).innerHTML = `ФИО: ${name_advert}`;
+            document.querySelector(`[id="${taskID}"] h1.task__text2`).innerHTML = `Начало аренды: ${new Date(date_start).toISOString().slice(0,10)}`;
+            document.querySelector(`[id="${taskID}"] h1.task__text3`).innerHTML = `Конец аренды: ${new Date(date_end).toISOString().slice(0,10)}`;
+            console.log(updateTaskResult);
+            this.addNotification({ text: updateTaskResult.message, type: 'success'});
+          }else{
+              this.addNotification({ text: 'DATE COLLISION', type: 'error'});
+            }
+        }else{
+          this.addNotification({text: `WRONG DATES, DAY AMOUNT MUST BE > ${this.#minday} AND < ${this.#maxday}`, type: 'error'});
+        }
+      }else{
+        this.addNotification({text: 'WRONG DATES, END DATE MUST BE > START DATE', type: 'error'});
+      }
+
     } catch (err) {
       this.addNotification({ text: err.message, type: 'error'});
       console.error(err);
@@ -219,10 +280,21 @@ export default class App {
 
       console.log("input", modalInput.value);
       if(BillboardID && modalInput.value){
-        this.#billboards.find(billboard => billboard.BillboardID === BillboardID).appendNewTask({ 
-          date_start: new Date(datastartInput.value).getTime(), 
-          date_end: new Date(dataendInput.value).getTime(), 
-          name_advert: modalInput.value});
+        const date_start = new Date(datastartInput.value).getTime() + 10800000;
+        const date_end = new Date(dataendInput.value).getTime()+ 10800000;
+        if (date_start<date_end){
+          if (date_end - date_start >= this.#minms && date_end - date_start <= this.#maxms){
+            
+            this.#billboards.find(billboard => billboard.BillboardID === BillboardID).appendNewTask({ 
+              date_start, 
+              date_end, 
+              name_advert: modalInput.value});
+          }else{
+            this.addNotification({text: `WRONG DATES, DAY AMOUNT MUST BE > ${this.#minday} AND < ${this.#maxday}`, type: 'error'});
+          }
+        }else{
+          this.addNotification({text: 'WRONG DATES, END DATE MUST BE > START DATE', type: 'error'});
+        }
       }
       cancelHandler();
     };
@@ -237,11 +309,13 @@ export default class App {
     const cancelHandler = () => {
       editTaskModal.close();
       localStorage.setItem('editTaskID', '');
+      localStorage.setItem('editTaskBillID', '');
       editTaskModal.querySelector('.app-modal__input').value = '';
     };
 
     const okHandler = () => {
       const taskID = localStorage.getItem('editTaskID');
+      const BillboardID = localStorage.getItem('editTaskBillID');
       const modalInput = document.getElementById('modal-edit-task-input');
       const datastartInput = document.getElementById('modal-add-task-date-start-edit');
       const dataendInput = document.getElementById('modal-add-task-date-end-edit');
@@ -249,9 +323,10 @@ export default class App {
       if(taskID && modalInput.value){
         this.editTask({taskID, 
           name_advert: modalInput.value, 
-          date_start:new Date(datastartInput.value).getTime(), 
-          date_end:new Date(dataendInput.value).getTime()});
-
+          date_start:new Date(datastartInput.value).getTime() + 10800000, 
+          date_end:new Date(dataendInput.value).getTime() + 10800000,
+          BillboardID
+        });
       }
 
       cancelHandler();
@@ -460,6 +535,7 @@ export default class App {
             taskText: task.name_advert,
             taskDateStart: new Date(task.date_start).toISOString().substring(0, 10),
             taskDateEnd: new Date(task.date_end).toISOString().substring(0, 10),
+            BillboardID: billboard.BillboardID
           });
         
         }

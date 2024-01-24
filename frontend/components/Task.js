@@ -3,23 +3,29 @@ export default class Task {
   #taskText = '';
   #taskDateStart = '';
   #taskDateEnd = '';
-
+  #BillboardID = ''
 
   constructor({
     taskID = null,
     taskText,
     taskDateStart,
-    taskDateEnd
+    taskDateEnd,
+    BillboardID
   }) {
     this.#taskID = taskID || crypto.randomUUID();
     this.#taskDateStart = taskDateStart;
     this.#taskDateEnd = taskDateEnd;
     this.#taskText = taskText;
+    this.#BillboardID = BillboardID;
   }
 
   get taskID() { return this.#taskID; }
+  get taskDateStart() { return this.#taskDateStart; }
+  get taskDateEnd() { return this.#taskDateEnd; }
+  get BillboardID() { return this.#BillboardID; }
 
   get taskText() { return this.#taskText; }
+  set BillboardID(value) {this.#BillboardID = value;}
   set taskText(value) {
     if (typeof value === 'string') {
       this.#taskText = value;
@@ -63,6 +69,8 @@ export default class Task {
     editBtn.classList.add('task__contol-btn', 'edit-icon');
     editBtn.addEventListener('click', () => {
       localStorage.setItem('editTaskID', this.#taskID);
+      localStorage.setItem('editTaskBillID', this.#BillboardID);
+      console.log("this", this.#BillboardID);
       document.getElementById('modal-edit-task').showModal();
     });
     lowerRowDiv.appendChild(editBtn);
@@ -72,9 +80,9 @@ export default class Task {
     deleteBtn.classList.add('task__contol-btn', 'delete-icon');
     deleteBtn.addEventListener('click', () => {
       localStorage.setItem('deleteTaskID', this.#taskID);
-
+      
       const deleteTaskModal = document.getElementById('modal-delete-task');
-      deleteTaskModal.querySelector('.app-modal__question').innerHTML = `Задача '${this.#taskText}' будет удалена. Прододлжить?`;
+      deleteTaskModal.querySelector('.app-modal__question').innerHTML = `Заявка '${this.#taskText}' будет удалена. Прододлжить?`;
       deleteTaskModal.showModal();
     });
     lowerRowDiv.appendChild(deleteBtn);

@@ -112,7 +112,7 @@ export default class AppModel {
                     }
                 }
             ); // get запрос по-умолчанию
-
+            console.log("fetch");
             if(updateTaskResponse.status !== 200){
                 const updateTaskBody = await updateTaskResponse.json();
                 return Promise.reject(updateTaskBody);
